@@ -40,7 +40,7 @@
     "exec": "ts-node"
   },
   "dependencies": {
-    "@ignatisd/cbrm": "^1.0",
+    "@ignatisd/cbrm": "^3.0",
     "bodybuilder": "^2.4.0",
     "elastic-apm-node": "^3.24.0",
     "es7": "npm:@elastic/elasticsearch@^7.15.0",
