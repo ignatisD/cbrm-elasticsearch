@@ -25,6 +25,20 @@
     "url": "https://github.com/ignatisD/cbrm-elasticsearch/issues"
   },
   "homepage": "https://github.com/ignatisD/cbrm-elasticsearch#readme",
+  "nodemonConfig": {
+    "verbose": false,
+    "watch": [
+      "src/**/*.ts",
+      ".env"
+    ],
+    "ignore": [
+      "src/**/*.spec.ts"
+    ],
+    "signal": "SIGTERM",
+    "delay": 1,
+    "ext": "ts",
+    "exec": "ts-node"
+  },
   "dependencies": {
     "@ignatisd/cbrm": "^1.0",
     "bodybuilder": "^2.4.0",
@@ -47,5 +61,35 @@
     "semantic-release": "^18.0.0",
     "ts-node": "^5.0.1",
     "typescript": "^4.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "tag": "latest",
+    "branches": [
+      "master"
+    ]
+  },
+  "release": {
+    "branches": [
+      "master"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/npm",
+        {
+          "pkgRoot": ".",
+          "tarballDir": "release"
+        }
+      ],
+      [
+        "@semantic-release/github",
+        {
+          "assets": "release/*.tgz"
+        }
+      ]
+    ]
   }
 }
