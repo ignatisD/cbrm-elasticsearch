@@ -18,6 +18,14 @@ export default abstract class ElasticModel<T extends IEsDoc> implements IEsDoc {
     static _searchIndex: string = "*";
     static _schema: {[key: string]: IEsMapping} = {};
     static template: string = null;
+    static strict: boolean = false;
+
+
+    static _ilm: string = null;
+    static _indexRollover: boolean = false;
+    static _pipeline: IEsPipeline = null;
+    static _analysis: any = null;
+
 
     public _id: string;
     public _index: string;
@@ -72,12 +80,33 @@ export default abstract class ElasticModel<T extends IEsDoc> implements IEsDoc {
     }
 
     public static pipeline(): IEsPipeline {
-        return null;
+        return this._pipeline;
+    }
+
+    public static ilm() {
+        return this._ilm;
     }
 
     public static settings(): IEsSettings {
+        let lifecycle = undefined;
+        if (this._ilm) {
+            lifecycle = {
+                name: this._ilm
+            };
+            if (this._indexRollover) {
+                lifecycle.rollover_alias = this._index;
+            }
+        }
+        let analysis = undefined;
+        if (this._analysis) {
+            analysis = this._analysis;
+        }
         return {
-            number_of_shards: 1
+            lifecycle,
+            index: {
+                number_of_shards: 1,
+                analysis
+            }
         };
     }
 
@@ -93,6 +122,7 @@ export default abstract class ElasticModel<T extends IEsDoc> implements IEsDoc {
                 _source: {
                     enabled: true
                 },
+                ...(this.strict ? {dynamic: false} : {}),
                 properties: this._schema
             }
         };

@@ -24,22 +24,21 @@ import Pagination from "@ignatisd/cbrm/lib/helpers/Pagination";
 import ResponseError from "@ignatisd/cbrm/lib/helpers/ResponseError";
 import IRepositoryBase from "@ignatisd/cbrm/lib/interfaces/repository/RepositoryBase";
 import IMapping, { IMappingResponse, MappingMode } from "@ignatisd/cbrm/lib/interfaces/helpers/Mapping";
-import Helpers from "@ignatisd/cbrm/lib/helpers/Helpers";
 import { IFilter, IQuery } from "@ignatisd/cbrm/lib/interfaces/helpers/Query";
 import { ElasticsearchConnector } from "./ElasticsearchConnector";
 import IPaginatedResults from "@ignatisd/cbrm/lib/interfaces/helpers/PaginatedResults";
 import Logger from "@ignatisd/cbrm/lib/helpers/Logger";
+import Query from "@ignatisd/cbrm/lib/helpers/Query";
 
 export default abstract class ElasticRepositoryBase<T extends IEsDoc = any> extends Repository<IEsModel<T>> implements IRepositoryBase<T> {
 
     protected readonly _client: ElasticsearchConnector;
     protected _builder: bodyBuilder.Bodybuilder;
     protected _took: number;
-    protected _active: string = "active";
 
-    protected constructor(modelFactory: IEsModel<T>) {
+    protected constructor(modelFactory: IEsModel<T>, client?: ElasticsearchConnector) {
         super(modelFactory);
-        this._client = ElasticsearchConnector.instance;
+        this._client = client || ElasticsearchConnector.instance;
         this.rebuild();
         if (!this.model._index) {
             throw new Error("A default index must be defined on the target Model");
@@ -470,11 +469,13 @@ export default abstract class ElasticRepositoryBase<T extends IEsDoc = any> exte
             if (mode === MappingMode.ALL || mode === MappingMode.MAPPING) {
                 const putMapping: RequestParams.IndicesPutMapping<IEsMapping> = {
                     index: this.model._searchIndex,
+                    ignore_unavailable: true,
+                    allow_no_indices: true,
                     body: {
                         properties: mapping.mappings.properties
                     }
                 };
-                const mappingRes = await this.client.putMapping(putMapping);
+                const mappingRes = await this.client.putMapping(putMapping, {ignore: [404]});
                 response.set("mapping", mappingRes.body);
                 result = mappingRes.body || {};
                 if (!result.acknowledged) {
@@ -495,7 +496,7 @@ export default abstract class ElasticRepositoryBase<T extends IEsDoc = any> exte
     async populate(docs: T, st: IQuery): Promise<T>;
     async populate(docs: T[], st: IQuery): Promise<T[]>;
     async populate(docs: T[]|T, st: IQuery) {
-        return Helpers.populate(docs, st);
+        return super.populate(docs, st);
     }
 
     async insertMany(items: T[]): Promise<JsonResponse<IEsWriteResponse<T>[]>> {
@@ -598,8 +599,9 @@ export default abstract class ElasticRepositoryBase<T extends IEsDoc = any> exte
         return response.check(response.errors, results);
     }
 
-    async asyncSearch(terms: IQuery): Promise<JsonResponse<IPaginatedResults<T>>> {
+    async asyncSearch(q: IQuery): Promise<JsonResponse<IPaginatedResults<T>>> {
         try {
+            const terms = Query.clone(q);
             const body = terms.raw ?? this.build(terms);
             const params: IElasticParams = {
                 index: terms.index || this.searchIndex,
@@ -613,8 +615,9 @@ export default abstract class ElasticRepositoryBase<T extends IEsDoc = any> exte
         }
     }
 
-    async search(terms: IQuery): Promise<JsonResponse<IPaginatedResults<T>>> {
+    async search(q: IQuery): Promise<JsonResponse<IPaginatedResults<T>>> {
         try {
+            const terms = Query.clone(q);
             const body = terms.raw ?? this.build(terms);
             const params: IElasticParams = {
                 index: terms.index || this.searchIndex,
@@ -672,8 +675,9 @@ export default abstract class ElasticRepositoryBase<T extends IEsDoc = any> exte
         return await this.search(terms);
     }
 
-    async findById(terms: IQuery): Promise<JsonResponse<T>> {
+    async findById(q: IQuery): Promise<JsonResponse<T>> {
         try {
+            const terms = Query.clone(q);
             terms.setPaging(1, 1);
             const body = this.build(terms);
             const params: IElasticParams = {
@@ -715,8 +719,9 @@ export default abstract class ElasticRepositoryBase<T extends IEsDoc = any> exte
         }
     }
 
-    async findOne(terms: IQuery) {
+    async findOne(q: IQuery) {
         try {
+            const terms = Query.clone(q);
             terms.setPaging(0, 1);
             const body = terms.raw ?? this.build(terms);
             const params: IElasticParams = {
@@ -897,7 +902,8 @@ export default abstract class ElasticRepositoryBase<T extends IEsDoc = any> exte
         }
     }
 
-    async deleteOne(terms: IQuery): Promise<JsonResponse<number>> {
+    async deleteOne(q: IQuery): Promise<JsonResponse<number>> {
+        const terms = Query.clone(q);
         terms.setPaging(1, 1);
         return await this.deleteMany(terms);
     }
