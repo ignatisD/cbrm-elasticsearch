@@ -99,7 +99,7 @@ export default abstract class ElasticModel<T extends IEsDoc> implements IEsDoc {
         }
         let analysis = undefined;
         if (this._analysis) {
-            analysis = this._analysis
+            analysis = this._analysis;
         }
         return {
             lifecycle,
