@@ -8,6 +8,7 @@ import JsonResponse from "@ignatisd/cbrm/lib/helpers/JsonResponse";
 import { IQuery } from "@ignatisd/cbrm/lib/interfaces/helpers/Query";
 import Pagination from "@ignatisd/cbrm/lib/helpers/Pagination";
 import IPaginatedResults from "@ignatisd/cbrm/lib/interfaces/helpers/PaginatedResults";
+import Query from "@ignatisd/cbrm/lib/helpers/Query";
 
 export default class ElasticBusinessBase<T extends IEsDoc> extends Business<T> implements IBusinessBase<T> {
 
@@ -93,16 +94,17 @@ export default class ElasticBusinessBase<T extends IEsDoc> extends Business<T> i
     }
     /**
      * Tested
-     * @param searchTerms
+     * @param q
      */
-    public async retrieve(searchTerms: IQuery): Promise<IPaginatedResults<T>> {
-        return await this.search(searchTerms);
+    public async retrieve(q: IQuery): Promise<IPaginatedResults<T>> {
+        return await this.search(q);
     }
     /**
      * Tested
-     * @param searchTerms
+     * @param q
      */
-    public async find(searchTerms: IQuery): Promise<T[]> {
+    public async find(q: IQuery): Promise<T[]> {
+        const searchTerms = Query.clone(q);
         searchTerms.setPaging(1, 10000);
         const response = await this.search(searchTerms);
         this._debug = response?.debug;
@@ -113,9 +115,10 @@ export default class ElasticBusinessBase<T extends IEsDoc> extends Business<T> i
 
     /**
      * Tested
-     * @param searchTerms
+     * @param q
      */
-    public async findById(searchTerms: IQuery): Promise<T> {
+    public async findById(q: IQuery): Promise<T> {
+        const searchTerms = Query.clone(q);
         searchTerms.setFilter("_id", searchTerms.id);
         const response = await this._repo.findById(searchTerms);
         this.took = this._repo.took();

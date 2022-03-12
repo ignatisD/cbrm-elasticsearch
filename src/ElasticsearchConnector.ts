@@ -119,8 +119,8 @@ export class ElasticsearchConnector implements IConnector {
             return err;
         });
     }
-    async putMapping<T = any>(mapping: RequestParams.IndicesPutMapping<T>) {
-        return await this.esClient.indices.put_mapping(mapping).catch((err) => {
+    async putMapping<T = any>(mapping: RequestParams.IndicesPutMapping<T>, clientParams: TransportRequestOptions = {ignore: [404]}) {
+        return await this.esClient.indices.put_mapping(mapping, clientParams).catch((err) => {
             return err;
         });
     }

@@ -1,6 +1,6 @@
 import { IModel } from "@ignatisd/cbrm/lib/interfaces/models/Model";
 import { IDoc } from "@ignatisd/cbrm/lib/interfaces/models/Document";
-import { IMappingProperty } from "@ignatisd/cbrm/lib/interfaces/helpers/Mapping";
+import { IMappingProperty, MappingMode } from "@ignatisd/cbrm/lib/interfaces/helpers/Mapping";
 
 type EsType = "alias"|"boolean"|"binary"|"object"|"nested"|"ip"|"completion"|"token_count"|"murmur3";
 type EsGeoType = "geo_point"|"geo_shape"|"shape";
@@ -68,11 +68,19 @@ export interface IEsPipeline {
         processors: IEsProcessor[];
     };
 }
+export interface IEsIndexLifecycle {
+    name: string;
+    rollover_alias?: string;
+}
 export interface IEsSettings {
-    number_of_shards: number;
-    number_of_replicas?: number;
-    refresh_interval?: string;
-    default_pipeline?: string;
+    lifecycle?: IEsIndexLifecycle;
+    index: {
+        number_of_shards: number;
+        number_of_replicas?: number;
+        refresh_interval?: string;
+        default_pipeline?: string;
+        analysis?: any;
+    };
 }
 export interface IEsSchemaSettings {
     virtuals: string[];
