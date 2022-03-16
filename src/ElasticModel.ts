@@ -6,7 +6,7 @@ import {
     IEsSettings
 } from "./EsModel";
 
-export default abstract class ElasticModel<T extends IEsDoc> implements IEsDoc {
+export abstract class ElasticModel<T extends IEsDoc> implements IEsDoc {
 
     static monthlyFormat: string = "YYYY-MM";
     static dateFormat: string = "YYYY-MM-DD";

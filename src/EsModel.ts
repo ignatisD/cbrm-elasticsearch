@@ -1,6 +1,4 @@
-import { IModel } from "@ignatisd/cbrm/lib/interfaces/models/Model";
-import { IDoc } from "@ignatisd/cbrm/lib/interfaces/models/Document";
-import { IMappingProperty, MappingMode } from "@ignatisd/cbrm/lib/interfaces/helpers/Mapping";
+import { IDoc, IMappingProperty, IModel } from "@ignatisd/cbrm";
 
 type EsType = "alias"|"boolean"|"binary"|"object"|"nested"|"ip"|"completion"|"token_count"|"murmur3";
 type EsGeoType = "geo_point"|"geo_shape"|"shape";

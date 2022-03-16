@@ -1,6 +1,5 @@
 import { Generic } from "es7/api/requestParams";
-import IError from "@ignatisd/cbrm/lib/interfaces/helpers/Error";
-import IPaginatedResults from "@ignatisd/cbrm/lib/interfaces/helpers/PaginatedResults";
+import { IPaginatedResults, IError } from "@ignatisd/cbrm";
 
 export type IEsOperation = "index"|"create"|"update"|"delete";
 export type RefreshCommand = boolean|"wait_for";

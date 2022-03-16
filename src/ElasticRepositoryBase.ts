@@ -3,6 +3,7 @@ import { cloneDeep, omit } from "lodash";
 import { ApiResponse, RequestParams } from "es7";
 import { DeleteByQuery } from "es7/api/requestParams";
 import { IEsDoc, IEsMapping, IEsMappingBody, IEsModel, IEsRegex } from "./EsModel";
+import { ElasticsearchConnector } from "./ElasticsearchConnector";
 import {
     EsBody,
     IAggregationResponse,
@@ -18,19 +19,18 @@ import {
     ISearchResponse,
     RefreshCommand
 } from "./ElasticHelpers";
-import Repository from "@ignatisd/cbrm/lib/repository/Repository";
-import JsonResponse from "@ignatisd/cbrm/lib/helpers/JsonResponse";
-import Pagination from "@ignatisd/cbrm/lib/helpers/Pagination";
-import ResponseError from "@ignatisd/cbrm/lib/helpers/ResponseError";
-import IRepositoryBase from "@ignatisd/cbrm/lib/interfaces/repository/RepositoryBase";
-import IMapping, { IMappingResponse, MappingMode } from "@ignatisd/cbrm/lib/interfaces/helpers/Mapping";
-import { IFilter, IQuery } from "@ignatisd/cbrm/lib/interfaces/helpers/Query";
-import { ElasticsearchConnector } from "./ElasticsearchConnector";
-import IPaginatedResults from "@ignatisd/cbrm/lib/interfaces/helpers/PaginatedResults";
-import Logger from "@ignatisd/cbrm/lib/helpers/Logger";
-import Query from "@ignatisd/cbrm/lib/helpers/Query";
+import {
+    IFilter,
+    IMapping, IMappingResponse,
+    IPaginatedResults,
+    IQuery,
+    IRepositoryBase,
+    JsonResponse, Logger, Pagination, Query,
+    Repository, ResponseError,
+    MappingMode
+} from "@ignatisd/cbrm";
 
-export default abstract class ElasticRepositoryBase<T extends IEsDoc = any> extends Repository<IEsModel<T>> implements IRepositoryBase<T> {
+export abstract class ElasticRepositoryBase<T extends IEsDoc = any> extends Repository<IEsModel<T>> implements IRepositoryBase<T> {
 
     protected readonly _client: ElasticsearchConnector;
     protected _builder: bodyBuilder.Bodybuilder;
