@@ -1,7 +1,7 @@
 import { Application } from "express";
 import { Client, RequestParams, ApiResponse, NodeOptions } from "es7";
 import { TransportRequestOptions, TransportRequestParams } from "es7/lib/Transport";
-import { IConnector } from "@ignatisd/cbrm/lib/interfaces/helpers/Connector";
+import { IConnector } from "@ignatisd/cbrm";
 import { Agent, AgentConfigOptions } from "elastic-apm-node";
 import { IBulkResponse, ICountResponse, ISearchResponse } from "./ElasticHelpers";
 

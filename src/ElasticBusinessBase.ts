@@ -1,16 +1,19 @@
 import { IEsDoc, IEsMappingBody } from "./EsModel";
-import ElasticRepositoryBase from "./ElasticRepositoryBase";
+import { ElasticRepositoryBase } from "./ElasticRepositoryBase";
 import { IEsWriteResponse, RefreshCommand } from "./ElasticHelpers";
-import Business from "@ignatisd/cbrm/lib/business/Business";
-import IBusinessBase from "@ignatisd/cbrm/lib/interfaces/business/BusinessBase";
-import { IMappingResponse, MappingMode } from "@ignatisd/cbrm/lib/interfaces/helpers/Mapping";
-import JsonResponse from "@ignatisd/cbrm/lib/helpers/JsonResponse";
-import { IQuery } from "@ignatisd/cbrm/lib/interfaces/helpers/Query";
-import Pagination from "@ignatisd/cbrm/lib/helpers/Pagination";
-import IPaginatedResults from "@ignatisd/cbrm/lib/interfaces/helpers/PaginatedResults";
-import Query from "@ignatisd/cbrm/lib/helpers/Query";
+import {
+    Business,
+    IBusinessBase,
+    IPaginatedResults,
+    JsonResponse,
+    Pagination,
+    Query,
+    IQuery,
+    MappingMode,
+    IMappingResponse
+} from "@ignatisd/cbrm";
 
-export default class ElasticBusinessBase<T extends IEsDoc> extends Business<T> implements IBusinessBase<T> {
+export class ElasticBusinessBase<T extends IEsDoc> extends Business<T> implements IBusinessBase<T> {
 
     public took: number = 0;
     public total: number = 0;
